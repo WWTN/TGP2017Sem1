@@ -1,3 +1,17 @@
+local _enemy = {}
+
+
+function _enemy:new(x,y,width,height)
+  enemy = {}
+  setmetatable(laser, self)
+  self.__index = self
+  laser:_create(x,y,width,height)
+  return laser
+end
+
+function _enemy:Create()
+  
+  end
 function enemyLoad()
   
   enemy = {}

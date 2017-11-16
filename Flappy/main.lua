@@ -69,6 +69,7 @@ function love.update(dt)
       enemyHurt()
       end
     end
+    
     for k, v in pairs(enemylasers) do
       hitTest = CheckCollision(v.xPos, v.yPos, v.width, v.height,ship.posX, ship.posY, 60, 60)
         if hitTest == true then

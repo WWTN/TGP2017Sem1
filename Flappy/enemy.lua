@@ -35,7 +35,7 @@ enemyShoot()
 end
 
 function enemyMove()
-      if enemy.posY < 50 then
+    if enemy.posY < 50 then
       enemy.posY = enemy.posY + 5
  
       elseif (enemy.goingRight == true and enemy.isBoss == false) then
@@ -49,15 +49,14 @@ function enemyMove()
     if enemy.posX < 30 then 
       enemy.goingRight = true 
     elseif enemy.posX > 200 then 
-      enemy.goingRight = false end
-   
-    
-  end
+      enemy.goingRight = false 
+    end   
+end
   
   function enemyShoot()
     enemy.fireTimer = enemy.fireTimer - 1
     if enemy.fireTimer <= 0 then
-      enemy.shootPos = enemy.posX + 30
+      enemy.shootPos = enemy.posX + (enemy.width/2)
       if enemy.isBoss == true then
        enemy.shootPos = enemy.posX + math.random(0,120)
       end

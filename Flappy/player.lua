@@ -23,7 +23,6 @@ function playerUpdate()
   
   if love.mouse.isDown(1) then
     moveToMouse()
-    
    
   else
     

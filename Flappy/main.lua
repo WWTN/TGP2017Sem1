@@ -77,8 +77,6 @@ function love.update(dt)
         end
     end
     
-    
-    
   elseif gameOver == true then
     gamestate = "win"
     
@@ -94,11 +92,6 @@ function love.update(dt)
 end
   
 function game_screen()
-  
-
-
-
-  
   hitTest = CheckCollision(0, 500, 60, 150, 125, 0, 45, 45)
   if(hitTest) then
     -- Do collision stuff

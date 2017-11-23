@@ -63,7 +63,6 @@ function enemyMove()
       end
       enemy.firing = true
       enemy.fireTimer = enemy.fireDelay
-      
     else
       enemy.firing = false
     end

@@ -1,46 +1,56 @@
 local _enemy = {}
 
 
-function _enemy:new(x,y,width,height)
+function _enemy:new(x,y, kind)
   enemy = {}
   setmetatable(laser, self)
   self.__index = self
-  laser:_create(x,y,width,height)
-  return laser
+  enemy:_create(x,y, kind)
+  return enemy
 end
 
-function _enemy:Create()
+function _enemy:_create(x, y, kind)
+ 
+  self.posX = x
+  self.posY = y
+  self.type = kind
   
+  if (self.type = 1) then
+      self.img = love.graphics.newImage("sprites/enemy.png")
+      self.width = 60
+      self.health = 3
+      self.isBoss = false
+      self.speed = 3
+      self.fireDelay = 90
+
+      self.shotSpeed = 2
+   
+  
+  
+  
+  else
+      self.img = love.graphics.newImage("sprites/boss.png")
+ 
+      self.isBoss = true
+      self.fireDelay = 30
+      self.shotSpeed = 4
+      self.health = 20
+      self.width = 120
   end
-function enemyLoad()
-  
-  enemy = {}
-  enemy.img = love.graphics.newImage("sprites/enemy.png")
-  enemy.posX = 60
-  enemy.posY = -60
-  enemy.width = 60
-  enemy.resetPosition = -60
-  enemy.health = 3
-  enemy.healthReset = 3
-  enemy.countDefeated = 0
-  enemy.bossThreshold = 1
-  enemy.isBoss = false
-  enemy.speed = 3
-  enemy.fireDelay = 90
-  enemy.fireTimer = enemy.fireDelay
-  enemy.shotSpeed = 2
-  enemy.shootPos = enemy.posX
-  enemy.goingRight = false
-  enemy.firing = false
-  gameOver = false
-  
+  self.fireTimer = self.fireDelay
+  self.firing = false
+  self.goingRight = false
+  self.shootPos = self.posX
 end
 
-function enemyDraw()
-  love.graphics.draw(enemy.img, enemy.posX, enemy.posY)
+
+
+
+function _enemy:draw()
+  love.graphics.draw(self.img, self.posX, self.posY)
 end
 
-function enemyUpdate()
+function _enemy:update()
   
 enemyMove()
 enemyShoot()
@@ -49,25 +59,31 @@ enemyShoot()
 end
 
 function enemyMove()
-      if enemy.posY < 50 then
+  
+  if (self.type = 1 then)
+    if self.posY < 50 then
       enemy.posY = enemy.posY + 5
  
-      elseif (enemy.goingRight == true and enemy.isBoss == false) then
+      elseif (enemy.goingRight == true) then
         enemy.posX = enemy.posX+1
         
-      elseif enemy.goingRight == false and enemy.isBoss == false then
+      elseif enemy.goingRight == false then
        enemy.posX = enemy.posX - 1
        
     end
     
     if enemy.posX < 30 then 
       enemy.goingRight = true 
-    elseif enemy.posX > 200 then 
+      elseif enemy.posX > 200 then 
       enemy.goingRight = false end
+    else
+  
+    end
+      
    
     
+   end
   end
-  
   function enemyShoot()
     enemy.fireTimer = enemy.fireTimer - 1
     if enemy.fireTimer <= 0 then
@@ -104,12 +120,5 @@ function enemyHurt()
   end
 
 function enemyBossLoad()
-enemy.img = love.graphics.newImage("sprites/boss.png")
-enemy.isBoss = true
-enemy.resetPosition = -120
-enemy.fireDelay = 30
-enemy.shotSpeed = 4
-enemy.healthReset = 20
-enemy.width = 120
-enemy.posX = 120
+
 end

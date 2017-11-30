@@ -15,7 +15,10 @@ function _enemy:_create(x, y, kind)
   self.posY = y
   self.type = kind
   
-  if (self.type = 1) then
+  self.goingRight = false -- put here so enemy types can pseudo-override this
+  
+  
+  if (self.type == 1) then
       self.img = love.graphics.newImage("sprites/enemy.png")
       self.width = 60
       self.health = 3
@@ -30,16 +33,18 @@ function _enemy:_create(x, y, kind)
   
   else
       self.img = love.graphics.newImage("sprites/boss.png")
- 
+    self.width = 120
+       self.health = 20
       self.isBoss = true
       self.fireDelay = 30
+      self.speed = 0
       self.shotSpeed = 4
-      self.health = 20
-      self.width = 120
+
+      
   end
   self.fireTimer = self.fireDelay
   self.firing = false
-  self.goingRight = false
+  self.alive = true
   self.shootPos = self.posX
 end
 
@@ -51,31 +56,33 @@ function _enemy:draw()
 end
 
 function _enemy:update()
-  
-enemyMove()
-enemyShoot()
+  if self.alive == true then
+    
+    enemyMove()
+    enemyShoot()
+  end
 
 
 end
 
 function enemyMove()
   
-  if (self.type = 1 then)
+  if (self.type == 1) then
     if self.posY < 50 then
-      enemy.posY = enemy.posY + 5
+      self.posY = self.posY + 5
  
-      elseif (enemy.goingRight == true) then
-        enemy.posX = enemy.posX+1
+      elseif (self.goingRight == true) then
+        self.posX = self.posX+1
         
-      elseif enemy.goingRight == false then
-       enemy.posX = enemy.posX - 1
+      elseif self.goingRight == false then
+       self.posX = self.posX - 1
        
     end
     
-    if enemy.posX < 30 then 
-      enemy.goingRight = true 
-      elseif enemy.posX > 200 then 
-      enemy.goingRight = false end
+    if self.posX < 30 then 
+      self.goingRight = true 
+      elseif self.posX > 200 then 
+      self.goingRight = false end
     else
   
     end
@@ -83,42 +90,39 @@ function enemyMove()
    
     
    end
-  end
+  
   function enemyShoot()
-    enemy.fireTimer = enemy.fireTimer - 1
-    if enemy.fireTimer <= 0 then
-      enemy.shootPos = enemy.posX + 30
-      if enemy.isBoss == true then
-       enemy.shootPos = enemy.posX + math.random(0,120)
-      end
-      enemy.firing = true
-      enemy.fireTimer = enemy.fireDelay
+    self.fireTimer = self.fireTimer - 1
+    if self.fireTimer <= 0 then
+      
+        if self.type == 1 then
+          self.shootPos = self.posX + (self.width/2)
+         
+        else
+         
+        
+          self.shootPos = self.posX + math.random(0,self.width)
+      
+        end
+     
+      
+      self.firing = true
+      self.fireTimer = self.fireDelay
       
     else
-      enemy.firing = false
+      self.firing = false
     end
     
     end
   
-function enemyHurt()
-   enemy.health = enemy.health - 1
+function _enemy:hurt()
+   self.health = self.health - 1
    
-    if enemy.health == 0 and enemy.isBoss == false then
+    if self.health <= 0  then
      
-     enemy.countDefeated = enemy.countDefeated +1
-     
-     if enemy.countDefeated >= enemy.bossThreshold then
-       enemyBossLoad()
-     end
-     enemy.posY = enemy.resetPosition
-     enemy.health = enemy.healthReset
-     
-   elseif enemy.health ==0 and enemy.isBoss == true then
-     gameOver = true
-     
-    end
+     self.alive = false
+    
+  end
+  
   end
 
-function enemyBossLoad()
-
-end

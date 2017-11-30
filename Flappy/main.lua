@@ -1,7 +1,7 @@
 require "background"
 require "player"
 require "asteroid"
-require "enemy"
+
 
 
 local Laser = require "laser"
@@ -13,17 +13,25 @@ local EnemyLaser = require "enemylaser"
 local index2 = 0
 enemylasers = {}
 
+local Enemies = require "enemy"
+local enemyIndex = 0
+enemies = {}
 
 function love.load()
   
   gamestate = "play"
   backgroundLoad()
   playerLoad()
-  enemyLoad()
+  gameOver = false
   math.randomseed(os.time())
+ -- table.insert(enemies,Enemies:new()
+  --table.insert(enemylasers,EnemyLaser:new(enemy.shootPos,enemy.posY,8,32, enemy.shotSpeed))
+     --       index2 = index2 + 1
  
   winImg = love.graphics.newImage("sprites/win.png")
   loseImg = love.graphics.newImage("sprites/lose.png")
+  
+  
 end
 
 function love.draw()
@@ -38,7 +46,11 @@ function love.draw()
        for k, v in pairs(enemylasers) do
         v:draw()
       end
-    enemyDraw()
+   
+   
+      for k,v in pairs(enemies) do
+        v:draw()
+        end
   elseif gamestate == "win" then
   love.graphics.draw(winImg, 50, 100)
   elseif gamestate == "lose" then
@@ -50,25 +62,36 @@ function love.update(dt)
   
   if gameOver == false and gameLoss == false then
     playerUpdate()
-    enemyUpdate()
+    
+    for k,v in pairs(enemies) do
+      v:update()
+    end
+  
       if (ship.isFiring == true) then
         table.insert(lasers,Laser:new(ship.posX+30,ship.posY,8,32))
         index = index + 1
       end
-      
-      if (enemy.firing == true) then
-        table.insert(enemylasers,EnemyLaser:new(enemy.shootPos,enemy.posY,8,32, enemy.shotSpeed))
-        index2 = index2 + 1
+      for k,v in pairs(enemies) do
+          if (v.firing == true) then
+            table.insert(enemylasers,EnemyLaser:new(v.shootPos,v.posY,8,32, v.shotSpeed))
+            index2 = index2 + 1
+          end
         end
-  
-    for k, v in pairs(lasers) do
-      hitTest = CheckCollision(v.xPos, v.yPos, v.width, v.height, enemy.posX, enemy.posY, enemy.width, enemy.width)
+      
+   for k1, v1 in pairs(enemies) do
+       for k, v in pairs(lasers) do
+      hitTest = CheckCollision(v.xPos, v.yPos, v.width, v.height, v1.posX, v1.posY, v1.width, v1.width)
    
-    if hitTest == true then
-      v.xPos = -1000
-      enemyHurt()
+        if hitTest == true then
+          v.xPos = -1000
+          v1:hurt()
+        end
       end
-    end
+       
+       
+       
+  end
+    
     
     for k, v in pairs(enemylasers) do
       hitTest = CheckCollision(v.xPos, v.yPos, v.width, v.height,ship.posX, ship.posY, 60, 60)
@@ -94,18 +117,7 @@ function love.update(dt)
   end
 end
   
-function game_screen()
-  
 
-
-
-  
-  hitTest = CheckCollision(0, 500, 60, 150, 125, 0, 45, 45)
-  if(hitTest) then
-    -- Do collision stuff
-  end
-  
-end
 
 function CheckCollision(x1,y1,w1,h1, x2,y2,w2,h2)
   return x1 < x2+w2 and

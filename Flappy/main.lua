@@ -2,7 +2,7 @@ require "background"
 require "player"
 require "asteroid"
 require "enemy"
-
+require "powerups"
 
 local Laser = require "laser"
 local index = 0
@@ -13,6 +13,8 @@ local EnemyLaser = require "enemylaser"
 local index2 = 0
 enemylasers = {}
 
+local power = require "power"
+
 
 function love.load()
   
@@ -20,6 +22,8 @@ function love.load()
   backgroundLoad()
   playerLoad()
   enemyLoad()
+  powerUpLoad()  
+  
   math.randomseed(os.time())
  
   winImg = love.graphics.newImage("sprites/win.png")
@@ -43,7 +47,10 @@ function love.draw()
   love.graphics.draw(winImg, 50, 100)
   elseif gamestate == "lose" then
   love.graphics.draw(loseImg, 50, 100)
-  end
+
+end
+
+powerUpDraw()
 end
 
 function love.update(dt)
@@ -51,6 +58,7 @@ function love.update(dt)
   if gameOver == false and gameLoss == false then
     playerUpdate()
     enemyUpdate()
+    powerUpUpdate()
       if (ship.isFiring == true) then
         table.insert(lasers,Laser:new(ship.posX+30,ship.posY,8,32))
         index = index + 1
@@ -77,6 +85,8 @@ function love.update(dt)
         end
     end
     
+    hitTest = 
+    
   elseif gameOver == true then
     gamestate = "win"
     
@@ -90,15 +100,6 @@ function love.update(dt)
       end
   end
 end
-  
-function game_screen()
-  hitTest = CheckCollision(0, 500, 60, 150, 125, 0, 45, 45)
-  if(hitTest) then
-    -- Do collision stuff
-  end
-  
-end
-
 function CheckCollision(x1,y1,w1,h1, x2,y2,w2,h2)
   return x1 < x2+w2 and
          x2 < x1+w1 and

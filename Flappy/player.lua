@@ -5,9 +5,11 @@ function playerLoad()
   ship.posY = 400
   ship.isFiring = false
   ship.fireCooldown = 60
+  ship.coolDown = 60
   ship.health = 3
   ship.tempInvul = true
   ship.invulTimer = 30
+  ship.bulletPU = false
   ship.shieldImage = love.graphics.newImage("sprites/shipShield.png")
   gameLoss = false
 end
@@ -54,15 +56,19 @@ function moveToMouse()
    end
    
 end
+
 function fire()
   ship.fireCooldown = ship.fireCooldown -1
   
-  if ship.fireCooldown == 0 then
-    ship.isFiring = true
-    ship.fireCooldown = 60
-  else
-    ship.isFiring = false
+  if (ship.bulletPU == false) then
+    if ship.fireCooldown == 0 then
+      ship.isFiring = true
+      ship.fireCooldown = ship.coolDown
+    else
+      ship.isFiring = false
     end
+  end
+
   end
   
   function takeDamage()

@@ -2,7 +2,7 @@ require "background"
 require "player"
 require "asteroid"
 require "enemy"
-
+require "powerups"
 
 local Laser = require "laser"
 local index = 0
@@ -20,6 +20,9 @@ function love.load()
   backgroundLoad()
   playerLoad()
   enemyLoad()
+  powerUpLoad()  
+  
+  timer = 1000
   math.randomseed(os.time())
  
   winImg = love.graphics.newImage("sprites/win.png")
@@ -30,7 +33,8 @@ function love.draw()
  backgroundDraw()
   if gamestate == "play" then
     playerDraw()
-    game_screen()
+    powerUpDraw()
+
       for k, v in pairs(lasers) do
         v:draw()
       end
@@ -43,7 +47,9 @@ function love.draw()
   love.graphics.draw(winImg, 50, 100)
   elseif gamestate == "lose" then
   love.graphics.draw(loseImg, 50, 100)
-  end
+
+end
+
 end
 
 function love.update(dt)
@@ -51,31 +57,15 @@ function love.update(dt)
   if gameOver == false and gameLoss == false then
     playerUpdate()
     enemyUpdate()
-      if (ship.isFiring == true) then
-        table.insert(lasers,Laser:new(ship.posX+30,ship.posY,8,32))
-        index = index + 1
-      end
-      
-      if (enemy.firing == true) then
-        table.insert(enemylasers,EnemyLaser:new(enemy.shootPos,enemy.posY,8,32, enemy.shotSpeed))
-        index2 = index2 + 1
-        end
+    
+    playerFiring()
+    enemyFiring()
   
-    for k, v in pairs(lasers) do
-      hitTest = CheckCollision(v.xPos, v.yPos, v.width, v.height, enemy.posX, enemy.posY, enemy.width, enemy.width)
-   
-    if hitTest == true then
-      v.xPos = -1000
-      enemyHurt()
-      end
-    end
-    for k, v in pairs(enemylasers) do
-      hitTest = CheckCollision(v.xPos, v.yPos, v.width, v.height,ship.posX, ship.posY, 60, 60)
-        if hitTest == true then
-          v.xPos = -1000
-          takeDamage()
-        end
-    end
+    laserCollision()
+    
+    powerUpUpdate()
+    
+    powerUpCollision()
     
   elseif gameOver == true then
     gamestate = "win"
@@ -90,14 +80,86 @@ function love.update(dt)
       end
   end
 end
-  
-function game_screen()
-  hitTest = CheckCollision(0, 500, 60, 150, 125, 0, 45, 45)
-  if(hitTest) then
-    -- Do collision stuff
+
+
+function powerUpCollision()
+   
+   hitTest = CheckCollision(powerUp.x, powerUp.y, powerUp.width, powerUp.height, ship.posX, ship.posY, 60, 60)
+    
+    
+    if (hitTest == true) then
+      if (powerUp.power == "invulnerability") then
+        ship.invulTimer = ship.invulTimer * 2
+        if ship.invulTimer > 0 then
+          ship.invulTimer = ship.invulTimer-1
+          ship.tempInvul = true
+        else
+          ship.tempInvul = false
+        end
+      
+      elseif (powerUp.power == "health") then
+        ship.health = ship.health + 1
+        
+      elseif (powerUp.power == "bullets") then
+        ship.bulletPU = true
+        
+        if (ship.bulletPU == true) then
+          ship.coolDown = 30
+          timer = timer - 1
+          if (timer <= 0) then
+            ship.coolDown = 60
+            ship.bulletPU = false
+          end        
+        end
+        
+      end
+      
+    end
+      
+    
   end
   
+
+function playerFiring()
+  
+      if (ship.isFiring == true) then
+        table.insert(lasers,Laser:new(ship.posX+30,ship.posY,8,32))
+        index = index + 1
+      end
 end
+
+function enemyFiring()
+
+      if (enemy.firing == true) then
+        table.insert(enemylasers,EnemyLaser:new(enemy.shootPos,enemy.posY,8,32, enemy.shotSpeed))
+        index2 = index2 + 1
+        end  
+end
+
+function laserCollision()
+
+    for k, v in pairs(lasers) do
+      hitTest = CheckCollision(v.xPos, v.yPos, v.width, v.height, enemy.posX, enemy.posY, enemy.width, enemy.width)
+   
+    if hitTest == true then
+      v.xPos = -1000
+      enemyHurt()
+    end
+    
+    end
+    
+    
+    for k, v in pairs(enemylasers) do
+      hitTest = CheckCollision(v.xPos, v.yPos, v.width, v.height,ship.posX, ship.posY, 60, 60)
+        if hitTest == true then
+          v.xPos = -1000
+          takeDamage()
+        end
+        
+    end
+    
+end
+
 
 function CheckCollision(x1,y1,w1,h1, x2,y2,w2,h2)
   return x1 < x2+w2 and

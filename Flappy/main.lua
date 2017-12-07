@@ -1,7 +1,7 @@
 require "background"
 require "player"
 require "asteroid"
-
+require "enemygen"
 
 
 local Laser = require "laser"
@@ -63,6 +63,8 @@ function love.update(dt)
   
   if gameOver == false and gameLoss == false then
     playerUpdate()
+    
+    enemyGenerationCheck(dt)
     
     for k,v in pairs(enemies) do
       v:update()

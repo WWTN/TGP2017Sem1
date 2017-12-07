@@ -24,7 +24,8 @@ function love.load()
   playerLoad()
   gameOver = false
   math.randomseed(os.time())
- -- table.insert(enemies,Enemies:new()
+  table.insert(enemies, Enemies:new(0, 0, 1))
+  enemyIndex = enemyIndex+1
   --table.insert(enemylasers,EnemyLaser:new(enemy.shootPos,enemy.posY,8,32, enemy.shotSpeed))
      --       index2 = index2 + 1
  
@@ -38,7 +39,7 @@ function love.draw()
  backgroundDraw()
   if gamestate == "play" then
     playerDraw()
-    game_screen()
+    
       for k, v in pairs(lasers) do
         v:draw()
       end

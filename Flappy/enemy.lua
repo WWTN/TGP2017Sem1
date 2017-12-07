@@ -1,9 +1,9 @@
-local _enemy = {}
+ local _enemy = {}
 
 
 function _enemy:new(x,y, kind)
   enemy = {}
-  setmetatable(laser, self)
+  setmetatable(enemy, self)
   self.__index = self
   enemy:_create(x,y, kind)
   return enemy
@@ -18,7 +18,7 @@ function _enemy:_create(x, y, kind)
   self.goingRight = false -- put here so enemy types can pseudo-override this
   
   
-  if (self.type == 1) then
+  if (self.type == 1) then --basic enemy type
       self.img = love.graphics.newImage("sprites/enemy.png")
       self.width = 60
       self.health = 3
@@ -29,9 +29,18 @@ function _enemy:_create(x, y, kind)
       self.shotSpeed = 2
    
   
+    elseif (self.type ==2) then
   
+  self.img = love.graphics.newImage("sprites/miniboss.png")
+      self.width = 60
+      self.health = 5
+      self.isBoss = false
+      self.speed = 5
+      self.fireDelay = 50
+
+      self.shotSpeed = 1
+    else --if no type or invalid type, then enemy defaults to spawning as boss
   
-  else
       self.img = love.graphics.newImage("sprites/boss.png")
     self.width = 120
        self.health = 20
@@ -52,22 +61,25 @@ end
 
 
 function _enemy:draw()
-  love.graphics.draw(self.img, self.posX, self.posY)
+  if self.alive == true then
+    love.graphics.draw(self.img, self.posX, self.posY)
+  end
 end
 
 function _enemy:update()
   if self.alive == true then
     
-    enemyMove()
-    enemyShoot()
+    self:move()
+    self:shoot()
   end
 
 
 end
 
-function enemyMove()
+function _enemy:move()
   
-  if (self.type == 1) then
+  if self.type == 1 then
+    
     if self.posY < 50 then
       self.posY = self.posY + 5
  
@@ -91,7 +103,7 @@ function enemyMove()
     
    end
   
-  function enemyShoot()
+  function _enemy:shoot()
     self.fireTimer = self.fireTimer - 1
     if self.fireTimer <= 0 then
       
@@ -126,3 +138,4 @@ function _enemy:hurt()
   
   end
 
+return _enemy

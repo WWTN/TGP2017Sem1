@@ -44,10 +44,10 @@ end
 function powerUpTimer()
   powerUp.timer = powerUp.timer - 1
   
-  if powerUp.timer <= 0 then
+ --[[ if powerUp.timer <= 0 then
     powerUp.isOn = false  
     powerUp.timer = powerUp.delay
-  end
+  end]]--
   
 end
 

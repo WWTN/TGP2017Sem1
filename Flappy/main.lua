@@ -92,17 +92,12 @@ function powerUpCollision()
 
   if powerUp.isOn == true then
     if (powerUp.power == "invulnerability") then 
-      ship.invulTimer = 180
       invulnerabilityPowerUpMethod()
       
     elseif (powerUp.power == "health") then
       healthPowerUpMethod() 
       
     elseif (powerUp.power == "bullets") then
-      if ship.bulletPU == false then
-        ship.bulletPU = true
-      end
-      
       bulletsPowerUpMethod()
     end
   powerUpTimer()
@@ -121,6 +116,10 @@ function healthPowerUpMethod()
 end
   
 function bulletsPowerUpMethod()
+    if ship.bulletPU == false then
+        ship.bulletPU = true
+    end
+      
     if powerUp.timer <= 0 then
       ship.bulletPU = false
       powerUp.isOn = false
@@ -131,7 +130,9 @@ end
   
 
 function invulnerabilityPowerUpMethod()
-    if powerUp.timer < 0 then
+    ship.invulTimer = 180
+    
+    if powerUp.timer <= 0 then
       powerUp.isOn = false
       powerUp.appearTimer = powerUp.appearDelay
     end

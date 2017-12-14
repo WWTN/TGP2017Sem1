@@ -24,13 +24,17 @@ function love.load()
   playerLoad()
   gameOver = false
   math.randomseed(os.time())
-  table.insert(enemies, Enemies:new(0, 0, 1))
+    loadGeneration()
+    
+  table.insert(enemies, Enemies:new(0, 0, 1, currentDiffFunc()))
   enemyIndex = enemyIndex+1
   --table.insert(enemylasers,EnemyLaser:new(enemy.shootPos,enemy.posY,8,32, enemy.shotSpeed))
      --       index2 = index2 + 1
  
   winImg = love.graphics.newImage("sprites/win.png")
   loseImg = love.graphics.newImage("sprites/lose.png")
+
+enemiesDefeated = 0
   
   
 end
@@ -64,8 +68,10 @@ function love.update(dt)
   if gameOver == false and gameLoss == false then
     playerUpdate()
     
-    enemyGenerationCheck(dt)
-    
+    enemyGenerationCheck(dt, enemiesDefeated)
+    if (checkSpawn()) then
+      table.insert(enemies, Enemies:new(0, 0, currentTypeFunc(), currentDiffFunc()))
+      end
     for k,v in pairs(enemies) do
       v:update()
     end
@@ -89,6 +95,11 @@ function love.update(dt)
           v.xPos = -1000
           v1:hurt()
         end
+        
+        if (v1:die() == false) then
+          v1.posX = 30000
+          enemiesDefeated = enemiesDefeated+1
+          end
       end
        
        

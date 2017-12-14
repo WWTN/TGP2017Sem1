@@ -1,15 +1,15 @@
  local _enemy = {}
 
 
-function _enemy:new(x,y, kind)
+function _enemy:new(x,y, kind, diff)
   enemy = {}
   setmetatable(enemy, self)
   self.__index = self
-  enemy:_create(x,y, kind)
+  enemy:_create(x,y, kind, diff)
   return enemy
 end
 
-function _enemy:_create(x, y, kind)
+function _enemy:_create(x, y, kind, diff)
  
   self.posX = x
   self.posY = y
@@ -21,7 +21,7 @@ function _enemy:_create(x, y, kind)
   if (self.type == 1) then --basic enemy type
       self.img = love.graphics.newImage("sprites/enemy.png")
       self.width = 60
-      self.health = 3
+      self.health = diff
       self.isBoss = false
       self.speed = 3
       self.fireDelay = 90
@@ -33,7 +33,7 @@ function _enemy:_create(x, y, kind)
   
   self.img = love.graphics.newImage("sprites/miniboss.png")
       self.width = 60
-      self.health = 5
+      self.health = diff +5
       self.isBoss = false
       self.speed = 5
       self.fireDelay = 50
@@ -43,7 +43,7 @@ function _enemy:_create(x, y, kind)
   
       self.img = love.graphics.newImage("sprites/boss.png")
     self.width = 120
-       self.health = 20
+       self.health = diff * 3
       self.isBoss = true
       self.fireDelay = 30
       self.speed = 0
@@ -136,6 +136,11 @@ function _enemy:hurt()
     
   end
   
-  end
+end
 
+function _enemy:die()
+  
+  
+  return self.alive;
+end
 return _enemy

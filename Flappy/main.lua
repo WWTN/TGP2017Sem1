@@ -15,16 +15,14 @@ enemylasers = {}
 
 
 function love.load()
+  math.randomseed(os.time())
   
   gamestate = "play"
   backgroundLoad()
   playerLoad()
   enemyLoad()
   powerUpLoad()  
-  
-  timer = 1000
-  math.randomseed(os.time())
- 
+   
   winImg = love.graphics.newImage("sprites/win.png")
   loseImg = love.graphics.newImage("sprites/lose.png")
 end
@@ -34,7 +32,7 @@ function love.draw()
   if gamestate == "play" then
     playerDraw()
     powerUpDraw()
-
+    
       for k, v in pairs(lasers) do
         v:draw()
       end
@@ -79,45 +77,66 @@ function love.update(dt)
       love.load()
       end
   end
+  
+  
 end
 
-
+  
 function powerUpCollision()
-   
-   hitTest = CheckCollision(powerUp.x, powerUp.y, powerUp.width, powerUp.height, ship.posX, ship.posY, 60, 60)
-    
-    
-    if (hitTest == true) then
-      if (powerUp.power == "invulnerability") then
-        ship.invulTimer = ship.invulTimer * 2
-        if ship.invulTimer > 0 then
-          ship.invulTimer = ship.invulTimer-1
-          ship.tempInvul = true
-        else
-          ship.tempInvul = false
-        end
+  hitTest = CheckCollision(powerUp.x, powerUp.y, powerUp.width, powerUp.height, ship.posX, ship.posY, 60, 60)
+  if (hitTest == true) then
+    powerUp.isOn = true
+    powerUp.y = -50 
+    powerUp.appear = false
+  end
+
+  if powerUp.isOn == true then
+    if (powerUp.power == "invulnerability") then 
+      ship.invulTimer = 180
+      invulnerabilityPowerUpMethod()
       
-      elseif (powerUp.power == "health") then
-        ship.health = ship.health + 1
-        
-      elseif (powerUp.power == "bullets") then
+    elseif (powerUp.power == "health") then
+      healthPowerUpMethod() 
+      
+    elseif (powerUp.power == "bullets") then
+      if ship.bulletPU == false then
         ship.bulletPU = true
-        
-        if (ship.bulletPU == true) then
-          ship.coolDown = 30
-          timer = timer - 1
-          if (timer <= 0) then
-            ship.coolDown = 60
-            ship.bulletPU = false
-          end        
-        end
-        
       end
       
+      bulletsPowerUpMethod()
     end
-      
-    
+  powerUpTimer()
   end
+  
+  
+end
+  
+function healthPowerUpMethod()
+  if ship.health <= 10 then 
+    ship.health = ship.health + 1
+    powerUp.isOn = false
+    powerUp.appearTimer = powerUp.appearDelay
+  end
+ 
+end
+  
+function bulletsPowerUpMethod()
+    if powerUp.timer <= 0 then
+      ship.bulletPU = false
+      powerUp.isOn = false
+      powerUp.appearTimer = powerUp.appearDelay
+    end
+    
+end
+  
+
+function invulnerabilityPowerUpMethod()
+    if powerUp.timer < 0 then
+      powerUp.isOn = false
+      powerUp.appearTimer = powerUp.appearDelay
+    end
+    
+end
   
 
 function playerFiring()

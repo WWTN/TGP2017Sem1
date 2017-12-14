@@ -9,7 +9,7 @@ function enemyLoad()
   enemy.health = 3
   enemy.healthReset = 3
   enemy.countDefeated = 0
-  enemy.bossThreshold = 1
+  enemy.bossThreshold = 30
   enemy.isBoss = false
   enemy.speed = 3
   enemy.fireDelay = 90
@@ -48,7 +48,7 @@ function enemyMove()
     
     if enemy.posX < 30 then 
       enemy.goingRight = true 
-    elseif enemy.posX > 200 then 
+    elseif enemy.posX > 330 - enemy.width then 
       enemy.goingRight = false 
     end   
 end

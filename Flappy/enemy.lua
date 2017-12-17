@@ -105,7 +105,7 @@ function _enemy:move() --movement patterns differ depending on the type of enemy
   
   function _enemy:shoot() --shooting patterns differ depending on enemy type
     self.fireTimer = self.fireTimer - 1
-    if self.fireTimer <= 0 then
+    if self.fireTimer <= 0 and self.alive then
       
         if self.type == 1 then
           self.shootPos = self.posX + (self.width/2)

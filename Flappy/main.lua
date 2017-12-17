@@ -4,6 +4,9 @@ require "asteroid"
 require "enemygen"
 
 
+require "powerups"
+
+
 local Laser = require "laser" --set up metatables of enemies, lasers, and enemy lasets.
 local index = 0
 local touchCount = 1;
@@ -17,11 +20,17 @@ local Enemies = require "enemy"
 local enemyIndex = 0
 enemies = {}
 
+
 function love.load() --loads non-table functions and also the basic enemy at the start of the game
+
+
+  math.randomseed(os.time())
+
   
   gamestate = "play"
   backgroundLoad() 
   playerLoad()
+
   gameOver = false
   math.randomseed(os.time())
     loadGeneration()
@@ -31,6 +40,10 @@ function love.load() --loads non-table functions and also the basic enemy at the
   --table.insert(enemylasers,EnemyLaser:new(enemy.shootPos,enemy.posY,8,32, enemy.shotSpeed))
      --       index2 = index2 + 1
  
+
+  powerUpLoad()  
+   
+
   winImg = love.graphics.newImage("sprites/win.png")
   loseImg = love.graphics.newImage("sprites/lose.png")
 
@@ -43,6 +56,8 @@ function love.draw()
  backgroundDraw()
   if gamestate == "play" then
     playerDraw()
+    powerUpDraw()
+
     
       for k, v in pairs(lasers) do
         v:draw()
@@ -60,13 +75,16 @@ function love.draw()
   love.graphics.draw(winImg, 50, 100)
   elseif gamestate == "lose" then
   love.graphics.draw(loseImg, 50, 100)
-  end
+
+end
+
 end
 
 function love.update(dt)
   
   if gameOver == false and gameLoss == false then
     playerUpdate()
+
     
     enemyGenerationCheck(dt, enemiesDefeated)
     if (checkSpawn()) then --checks to see if enemy should spawn; loads them in with current paramaters defined by enemy generation protocols
@@ -116,8 +134,11 @@ function love.update(dt)
           takeDamage()
         end
     end
+
     
+    powerUpUpdate()
     
+    powerUpCollision()
     
   elseif gameOver == true then
     gamestate = "win"
@@ -131,9 +152,78 @@ function love.update(dt)
       love.load()
       end
   end
+  
+
+  
+end
+
+  
+function powerUpCollision()
+  hitTest = CheckCollision(powerUp.x, powerUp.y, powerUp.width, powerUp.height, ship.posX, ship.posY, 60, 60)
+  if (hitTest == true) then
+    powerUp.isOn = true
+    powerUp.y = -50 
+    powerUp.appear = false
+  end
+
+  if powerUp.isOn == true then
+    if (powerUp.power == "invulnerability") then 
+      invulnerabilityPowerUpMethod()
+      
+    elseif (powerUp.power == "health") then
+      healthPowerUpMethod() 
+      
+    elseif (powerUp.power == "bullets") then
+      bulletsPowerUpMethod()
+    end
+  powerUpTimer()
+  end
+  
+  
+end
+  
+function healthPowerUpMethod()
+  if ship.health <= 10 then 
+    ship.health = ship.health + 1
+    powerUp.isOn = false
+    powerUp.appearTimer = powerUp.appearDelay
+  end
+ 
+end
+  
+function bulletsPowerUpMethod()
+    if ship.bulletPU == false then
+        ship.bulletPU = true
+    end
+      
+    if powerUp.bulletTimer <= 0 then
+      ship.bulletPU = false
+      powerUp.isOn = false
+      powerUp.appearTimer = powerUp.appearDelay
+      powerUp.bulletTimer = powerUp.bulletDelay
+    end
+    
 end
   
 
+function invulnerabilityPowerUpMethod()
+    ship.invulTimer = 180
+    
+    if powerUp.timer <= 0 then
+      powerUp.isOn = false
+      powerUp.appearTimer = powerUp.appearDelay
+    end
+    
+end
+  
+
+function playerFiring()
+  
+      if (ship.isFiring == true) then
+        table.insert(lasers,Laser:new(ship.posX+30,ship.posY,8,32))
+        index = index + 1
+      end
+end
 
 function CheckCollision(x1,y1,w1,h1, x2,y2,w2,h2)
   return x1 < x2+w2 and

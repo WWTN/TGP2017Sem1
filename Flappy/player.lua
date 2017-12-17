@@ -1,29 +1,42 @@
 function playerLoad()
   ship = {}
-  ship.img = love.graphics.newImage("sprites/flappy.png")
   ship.posX = 150
   ship.posY = 400
   ship.isFiring = false
   ship.fireCooldown = 60
+  ship.coolDown = 60
   ship.health = 3
-  ship.tempInvul = true
+  ship.tempInvul = false
   ship.invulTimer = 30
+  ship.bulletPU = false
+  ship.sprite = love.graphics.newImage("sprites/flappy.png")
+  ship.bulletImage = love.graphics.newImage("sprites/shipBulletPU.png")
   ship.shieldImage = love.graphics.newImage("sprites/shipShield.png")
+  ship.img = ship.sprite
   gameLoss = false
+  
+  count = 0
 end
 
 function playerDraw()
-  love.graphics.draw(ship.img, ship.posX, ship.posY)
-  if ship.tempInvul == true then
-    love.graphics.draw(ship.shieldImage, ship.posX, ship.posY)
+  if ship.bulletPU == true then
+    ship.img = ship.bulletImage
+  else  
+    ship.img = ship.sprite
   end
+  
+  love.graphics.draw(ship.img, ship.posX, ship.posY)
+    
+    if ship.tempInvul == true then
+      love.graphics.draw(ship.shieldImage, ship.posX, ship.posY)
+    end
+    
 end
 
 function playerUpdate()
   
   if love.mouse.isDown(1) then
     moveToMouse()
-    
    
   else
     
@@ -35,7 +48,7 @@ function playerUpdate()
     ship.tempInvul = true
   else
     ship.tempInvul = false
-    end
+  end
 end
 
 function moveToMouse()
@@ -55,15 +68,29 @@ function moveToMouse()
    end
    
 end
+
 function fire()
+  if (ship.bulletPU == true) then
+    ship.coolDown = 30
+  else
+    ship.coolDown = 60
+  end
+  
   ship.fireCooldown = ship.fireCooldown -1
   
-  if ship.fireCooldown == 0 then
-    ship.isFiring = true
-    ship.fireCooldown = 60
-  else
-    ship.isFiring = false
+    if ship.fireCooldown == 0 then
+      ship.isFiring = true
+      ship.fireCooldown = ship.coolDown
+     -- count = count + 1
+    else
+      ship.isFiring = false
     end
+    --[[
+    if count > 50 then
+      ship.bulletPU = false
+    end
+    ]]--
+
   end
   
   function takeDamage()

@@ -14,6 +14,8 @@ function powerUpLoad()
   powerUp.isOn = false
   powerUp.appearDelay = math.random(350, 900)
   powerUp.delay = 300
+  powerUp.bulletDelay = 600
+  powerUp.bulletTimer = powerUp.bulletDelay
   powerUp.timer = powerUp.delay
   powerUp.appearTimer = powerUp.appearDelay
   
@@ -42,7 +44,13 @@ function powerUpUpdate()
 end
 
 function powerUpTimer()
+  
+  if powerUp.power == "bullets" then
+    powerUp.bulletTimer = powerUp.bulletTimer - 1
+  else
   powerUp.timer = powerUp.timer - 1
+    
+  end
   
  --[[ if powerUp.timer <= 0 then
     powerUp.isOn = false  
@@ -65,7 +73,6 @@ function PowerUpMovement()
   if powerUp.y + powerUp.height < 0 then
     powerUp.x = math.random(40, 300)
   end
-  
   
 end
 

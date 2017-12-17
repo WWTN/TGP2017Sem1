@@ -120,10 +120,11 @@ function bulletsPowerUpMethod()
         ship.bulletPU = true
     end
       
-    if powerUp.timer <= 0 then
+    if powerUp.bulletTimer <= 0 then
       ship.bulletPU = false
       powerUp.isOn = false
       powerUp.appearTimer = powerUp.appearDelay
+      powerUp.bulletTimer = powerUp.bulletDelay
     end
     
 end

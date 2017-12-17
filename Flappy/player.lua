@@ -19,15 +19,18 @@ function playerLoad()
 end
 
 function playerDraw()
-  if ship.tempInvul == true then
-    ship.img = ship.shieldImage
-  elseif ship.bulletPU == true then
+  if ship.bulletPU == true then
     ship.img = ship.bulletImage
   else  
     ship.img = ship.sprite
   end
-    love.graphics.draw(ship.img, ship.posX, ship.posY)
-
+  
+  love.graphics.draw(ship.img, ship.posX, ship.posY)
+    
+    if ship.tempInvul == true then
+      love.graphics.draw(ship.shieldImage, ship.posX, ship.posY)
+    end
+    
 end
 
 function playerUpdate()
@@ -78,7 +81,7 @@ function fire()
     if ship.fireCooldown == 0 then
       ship.isFiring = true
       ship.fireCooldown = ship.coolDown
-      count = count + 1
+     -- count = count + 1
     else
       ship.isFiring = false
     end

@@ -1,6 +1,6 @@
 local _laserE = {}
 
-function _laserE:new(x,y,width,height,spd)
+function _laserE:new(x,y,width,height,spd) 
   laserE = {}
   setmetatable(laserE, self)
   self.__index = self

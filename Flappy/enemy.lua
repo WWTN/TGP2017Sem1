@@ -29,7 +29,7 @@ function _enemy:_create(x, y, kind, diff)
       self.shotSpeed = 2
    
   
-    elseif (self.type ==2) then
+    elseif (self.type ==2) then --first secondary type
   
   self.img = love.graphics.newImage("sprites/miniboss.png")
       self.width = 60
@@ -51,7 +51,7 @@ function _enemy:_create(x, y, kind, diff)
 
       
   end
-  self.fireTimer = self.fireDelay
+  self.fireTimer = self.fireDelay --stuff that's universal regardless of what kind of enemy has spawned
   self.firing = false
   self.alive = true
   self.shootPos = self.posX
@@ -66,7 +66,7 @@ function _enemy:draw()
   end
 end
 
-function _enemy:update()
+function _enemy:update() 
   if self.alive == true then
     
     self:move()
@@ -76,7 +76,7 @@ function _enemy:update()
 
 end
 
-function _enemy:move()
+function _enemy:move() --movement patterns differ depending on the type of enemy
   
   if self.type == 1 then
     
@@ -103,7 +103,7 @@ function _enemy:move()
     
    end
   
-  function _enemy:shoot()
+  function _enemy:shoot() --shooting patterns differ depending on enemy type
     self.fireTimer = self.fireTimer - 1
     if self.fireTimer <= 0 then
       
@@ -118,7 +118,7 @@ function _enemy:move()
         end
      
       
-      self.firing = true
+      self.firing = true --fires and then resets fire timer so that does not fire endlessley (unless the fire delay is set up so that it will fire endlessley)
       self.fireTimer = self.fireDelay
       
     else
@@ -138,7 +138,7 @@ function _enemy:hurt()
   
 end
 
-function _enemy:die()
+function _enemy:die() --misleadingly named; checks if unit is alive
   
   
   return self.alive;

@@ -1,99 +1,146 @@
-function enemyLoad()
-  
+ local _enemy = {}
+
+
+function _enemy:new(x,y, kind, diff)
   enemy = {}
-  enemy.img = love.graphics.newImage("sprites/enemy.png")
-  enemy.posX = 60
-  enemy.posY = -60
-  enemy.width = 60
-  enemy.resetPosition = -60
-  enemy.health = 3
-  enemy.healthReset = 3
-  enemy.countDefeated = 0
-  enemy.bossThreshold = 30
-  enemy.isBoss = false
-  enemy.speed = 3
-  enemy.fireDelay = 90
-  enemy.fireTimer = enemy.fireDelay
-  enemy.shotSpeed = 2
-  enemy.shootPos = enemy.posX
-  enemy.goingRight = false
-  enemy.firing = false
-  gameOver = false
-  
+  setmetatable(enemy, self)
+  self.__index = self
+  enemy:_create(x,y, kind, diff)
+  return enemy
 end
 
-function enemyDraw()
-  love.graphics.draw(enemy.img, enemy.posX, enemy.posY)
-end
-
-function enemyUpdate()
-  
-enemyMove()
-enemyShoot()
-
-
-end
-
-function enemyMove()
-    if enemy.posY < 50 then
-      enemy.posY = enemy.posY + 5
+function _enemy:_create(x, y, kind, diff)
  
-      elseif (enemy.goingRight == true and enemy.isBoss == false) then
-        enemy.posX = enemy.posX+1
+  self.posX = x
+  self.posY = y
+  self.type = kind
+  
+  self.goingRight = false -- put here so enemy types can pseudo-override this
+  
+  
+  if (self.type == 1) then --basic enemy type
+      self.img = love.graphics.newImage("sprites/enemy.png")
+      self.width = 60
+      self.health = diff
+      self.isBoss = false
+      self.speed = 3
+      self.fireDelay = 90
+
+      self.shotSpeed = 2
+   
+  
+    elseif (self.type ==2) then --first secondary type
+  
+  self.img = love.graphics.newImage("sprites/miniboss.png")
+      self.width = 60
+      self.health = diff +5
+      self.isBoss = false
+      self.speed = 5
+      self.fireDelay = 50
+
+      self.shotSpeed = 1
+    else --if no type or invalid type, then enemy defaults to spawning as boss
+  
+      self.img = love.graphics.newImage("sprites/boss.png")
+    self.width = 120
+       self.health = diff * 3
+      self.isBoss = true
+      self.fireDelay = 30
+      self.speed = 0
+      self.shotSpeed = 4
+
+      
+  end
+  self.fireTimer = self.fireDelay --stuff that's universal regardless of what kind of enemy has spawned
+  self.firing = false
+  self.alive = true
+  self.shootPos = self.posX
+end
+
+
+
+
+function _enemy:draw()
+  if self.alive == true then
+    love.graphics.draw(self.img, self.posX, self.posY)
+  end
+end
+
+function _enemy:update() 
+  if self.alive == true then
+    
+    self:move()
+    self:shoot()
+  end
+
+
+end
+
+function _enemy:move() --movement patterns differ depending on the type of enemy
+  
+  if self.type == 1 then
+    
+    if self.posY < 50 then
+      self.posY = self.posY + 5
+ 
+      elseif (self.goingRight == true) then
+        self.posX = self.posX+1
         
-      elseif enemy.goingRight == false and enemy.isBoss == false then
-       enemy.posX = enemy.posX - 1
+      elseif self.goingRight == false then
+       self.posX = self.posX - 1
        
     end
     
-    if enemy.posX < 30 then 
-      enemy.goingRight = true 
-    elseif enemy.posX > 330 - enemy.width then 
-      enemy.goingRight = false 
-    end   
-end
-  
-  function enemyShoot()
-    enemy.fireTimer = enemy.fireTimer - 1
-    if enemy.fireTimer <= 0 then
-      enemy.shootPos = enemy.posX + (enemy.width/2)
-      if enemy.isBoss == true then
-       enemy.shootPos = enemy.posX + math.random(0,120)
-      end
-      enemy.firing = true
-      enemy.fireTimer = enemy.fireDelay
+    if self.posX < 30 then 
+      self.goingRight = true 
+      elseif self.posX > 200 then 
+      self.goingRight = false end
     else
-      enemy.firing = false
+  
+    end
+      
+   
+    
+   end
+  
+  function _enemy:shoot() --shooting patterns differ depending on enemy type
+    self.fireTimer = self.fireTimer - 1
+    if self.fireTimer <= 0 and self.alive then
+      
+        if self.type == 1 then
+          self.shootPos = self.posX + (self.width/2)
+         
+        else
+         
+        
+          self.shootPos = self.posX + math.random(0,self.width)
+      
+        end
+     
+      
+      self.firing = true --fires and then resets fire timer so that does not fire endlessley (unless the fire delay is set up so that it will fire endlessley)
+      self.fireTimer = self.fireDelay
+      
+    else
+      self.firing = false
     end
     
     end
   
-function enemyHurt()
-   enemy.health = enemy.health - 1
+function _enemy:hurt()
+   self.health = self.health - 1
    
-    if enemy.health == 0 and enemy.isBoss == false then
+    if self.health <= 0  then
      
-     enemy.countDefeated = enemy.countDefeated +1
-     
-     if enemy.countDefeated >= enemy.bossThreshold then
-       enemyBossLoad()
-     end
-     enemy.posY = enemy.resetPosition
-     enemy.health = enemy.healthReset
-     
-   elseif enemy.health ==0 and enemy.isBoss == true then
-     gameOver = true
-     
-    end
+     self.alive = false
+    
   end
-
-function enemyBossLoad()
-enemy.img = love.graphics.newImage("sprites/boss.png")
-enemy.isBoss = true
-enemy.resetPosition = -120
-enemy.fireDelay = 30
-enemy.shotSpeed = 4
-enemy.healthReset = 20
-enemy.width = 120
-enemy.posX = 120
+  
 end
+
+function _enemy:die() --misleadingly named; checks if unit is alive
+  
+  
+  return self.alive;
+end
+return _enemy

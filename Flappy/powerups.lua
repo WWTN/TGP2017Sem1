@@ -18,7 +18,10 @@ function powerUpLoad()
   powerUp.bulletTimer = powerUp.bulletDelay
   powerUp.timer = powerUp.delay
   powerUp.appearTimer = powerUp.appearDelay
-  
+ 
+ --Sound effects
+  powerUp.activateAudio = love.audio.newSource('Audio/Player/PowerUpActivated.wav')
+  powerUp.healthAudio = love.audio.newSource('Audio/Player/HealthPowerup.wav')
 end 
 
 function powerUpDraw()

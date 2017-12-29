@@ -1,11 +1,13 @@
- local _enemy = {}
-
+local _enemy = {}
+local laserAudio = love.audio.newSource('Audio/Enemy/EnemyLaser.wav')
 
 function _enemy:new(x,y, kind, diff)
   enemy = {}
   setmetatable(enemy, self)
   self.__index = self
   enemy:_create(x,y, kind, diff)
+   print(laserAudio:getVolume())
+   
   return enemy
 end
 
@@ -93,7 +95,7 @@ function _enemy:move() --movement patterns differ depending on the type of enemy
     
     if self.posX < 30 then 
       self.goingRight = true 
-      elseif self.posX > 200 then 
+      elseif self.posX + self.width > 330 then 
       self.goingRight = false end
     else
   
@@ -109,7 +111,8 @@ function _enemy:move() --movement patterns differ depending on the type of enemy
       
         if self.type == 1 then
           self.shootPos = self.posX + (self.width/2)
-         
+          laserAudio:setVolume(0.25)
+         laserAudio:play()
         else
          
         

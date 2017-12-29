@@ -2,7 +2,7 @@ function loadGeneration()
  
   threshold = 5
   thresholdPassed = 0
-  spawnIntervalDefault = 120
+  spawnIntervalDefault = 300
   spawnInterval = spawnIntervalDefault
   spawnTimer = 0
   currentDiff = 1
@@ -17,6 +17,7 @@ function loadGeneration()
   end
 
 function enemyGenerationCheck(dt, enemiesDefeated)
+  
   if (totalEnemiesKilled ~= enemiesDefeated) then
   enemiesKilled = enemiesKilled + (enemiesDefeated - totalEnemiesKilled)
   totalEnemiesKilled = enemiesDefeated
@@ -34,7 +35,6 @@ end
     currentType = currentType+1
     thresholdPassed = 0
     end
-  
   spawnTimer = spawnTimer+1
   
 end
@@ -53,7 +53,10 @@ function currentDiffFunc()
 end
 
 function upDiff()
-  currentDiff = currentDiff +1
+  if currentDiff < 3 then
+    currentDiff = currentDiff +1
+  end
+  
 end
 
 function checkSpawn() --checks to see if enemy should spawn or not.

@@ -2,10 +2,10 @@ require "background"
 require "player"
 require "asteroid"
 require "enemygen"
-
-
 require "powerups"
 
+local gameOverAudio1 = love.audio.newSource('Audio/Game_Over/GameOverpt1.wav')
+local gameOverAudio2 = love.audio.newSource('Audio/Game_Over/GameOverpt2.wav')
 
 local Laser = require "laser" --set up metatables of enemies, lasers, and enemy lasets.
 local index = 0
@@ -32,7 +32,6 @@ function love.load() --loads non-table functions and also the basic enemy at the
   playerLoad()
 
   gameOver = false
-  math.randomseed(os.time())
     loadGeneration()
     
   table.insert(enemies, Enemies:new(0, 0, 1, currentDiffFunc()))
@@ -75,6 +74,8 @@ function love.draw()
   love.graphics.draw(winImg, 50, 100)
   elseif gamestate == "lose" then
   love.graphics.draw(loseImg, 50, 100)
+  gameOverAudio1:play()
+  gameOverAudio2:play()
 
 end
 
@@ -135,7 +136,6 @@ function love.update(dt)
         end
     end
 
-    
     powerUpUpdate()
     
     powerUpCollision()
@@ -164,6 +164,7 @@ function powerUpCollision()
     powerUp.isOn = true
     powerUp.y = -50 
     powerUp.appear = false
+    powerUp.activateAudio:play()
   end
 
   if powerUp.isOn == true then
@@ -185,6 +186,7 @@ end
 function healthPowerUpMethod()
   if ship.health <= 10 then 
     ship.health = ship.health + 1
+    powerUp.healthAudio:play() 
     powerUp.isOn = false
     powerUp.appearTimer = powerUp.appearDelay
   end

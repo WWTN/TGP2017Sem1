@@ -1,3 +1,7 @@
+local laserAudio = love.audio.newSource('Audio/Player/PlayerLaser.wav')
+local hurtAudio = love.audio.newSource('Audio/Player/Hit_Hurt.wav') 
+local shieldAudio = love.audio.newSource('Audio/Player/Shield.wav')
+
 function playerLoad()
   ship = {}
   ship.posX = 150
@@ -5,7 +9,7 @@ function playerLoad()
   ship.isFiring = false
   ship.fireCooldown = 60
   ship.coolDown = 60
-  ship.health = 3
+  ship.health = 5
   ship.tempInvul = false
   ship.invulTimer = 30
   ship.bulletPU = false
@@ -15,7 +19,8 @@ function playerLoad()
   ship.img = ship.sprite
   gameLoss = false
   
-  count = 0
+  shieldAudio:setLooping(true)
+  shieldAudio:setVolume(0.25)
 end
 
 function playerDraw()
@@ -46,8 +51,10 @@ function playerUpdate()
   if ship.invulTimer > 0 then
     ship.invulTimer = ship.invulTimer-1
     ship.tempInvul = true
+    shieldAudio:play()
   else
     ship.tempInvul = false
+    shieldAudio:stop()
   end
 end
 
@@ -79,29 +86,26 @@ function fire()
   ship.fireCooldown = ship.fireCooldown -1
   
     if ship.fireCooldown == 0 then
+      laserAudio:play()
       ship.isFiring = true
       ship.fireCooldown = ship.coolDown
      -- count = count + 1
     else
       ship.isFiring = false
     end
-    --[[
-    if count > 50 then
-      ship.bulletPU = false
-    end
-    ]]--
 
   end
   
   function takeDamage()
     if ship.tempInvul == false then
       ship.health = ship.health-1
+      hurtAudio:play()
         if ship.health <= 0 then
           ship.img = love.graphics.newImage("sprites/shipShield.png")
           gameLoss = true
         else
           ship.invulTimer = 120
-        end
-        
+        end    
       end
+      
    end

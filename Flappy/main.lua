@@ -4,6 +4,11 @@ require "asteroid"
 require "enemygen"
 require "powerups"
 
+-- UI for Health & Score
+local UIFont = love.graphics.newFont('Font/JetPilot.ttf', 20)
+
+
+-- Game Over sounds
 local gameOverAudio1 = love.audio.newSource('Audio/Game_Over/GameOverpt1.wav')
 local gameOverAudio2 = love.audio.newSource('Audio/Game_Over/GameOverpt2.wav')
 
@@ -22,10 +27,9 @@ enemies = {}
 
 
 function love.load() --loads non-table functions and also the basic enemy at the start of the game
-
-
   math.randomseed(os.time())
 
+  gameScore = 0
   
   gamestate = "play"
   backgroundLoad() 
@@ -57,7 +61,6 @@ function love.draw()
     playerDraw()
     powerUpDraw()
 
-    
       for k, v in pairs(lasers) do
         v:draw()
       end
@@ -69,13 +72,17 @@ function love.draw()
    
       for k,v in pairs(enemies) do
         v:draw()
-        end
+      end
+      love.graphics.setFont(UIFont)
+      love.graphics.print("Health: " .. ship.health, 720/2 - 70, 10)
+      
+      
+      love.graphics.print("Score: " .. gameScore, 10, 10)
+      
   elseif gamestate == "win" then
   love.graphics.draw(winImg, 50, 100)
   elseif gamestate == "lose" then
   love.graphics.draw(loseImg, 50, 100)
-  gameOverAudio1:play()
-  gameOverAudio2:play()
 
 end
 
@@ -113,17 +120,14 @@ function love.update(dt)
         if hitTest == true then --if there are then deal damage and teleport offscreen
           v.xPos = -1000
           v1:hurt()
+          gameScore = gameScore + 30
           if (v1:die() == false) then--if enemy is dead then teleport that offscreeen
           v1.posX = 30000
           enemiesDefeated = enemiesDefeated+1
+          gameScore = gameScore + 100
           end
-          
-        end
-        
-        
+        end        
       end
-       
-       
        
   end
     
@@ -153,7 +157,10 @@ function love.update(dt)
       end
   end
   
-
+  if gamestate == "lose" then
+      gameOverAudio1:play()
+      gameOverAudio2:play()
+  end
   
 end
 
@@ -184,7 +191,9 @@ function powerUpCollision()
 end
   
 function healthPowerUpMethod()
-  if ship.health <= 10 then 
+  
+  if ship.health <= 10 then
+    ship.healthIncrease = true 
     ship.health = ship.health + 1
     powerUp.healthAudio:play() 
     powerUp.isOn = false

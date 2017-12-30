@@ -10,12 +10,14 @@ function playerLoad()
   ship.fireCooldown = 60
   ship.coolDown = 60
   ship.health = 5
+  ship.healthIncrease = false
   ship.tempInvul = false
   ship.invulTimer = 30
   ship.bulletPU = false
   ship.sprite = love.graphics.newImage("sprites/flappy.png")
   ship.bulletImage = love.graphics.newImage("sprites/shipBulletPU.png")
   ship.shieldImage = love.graphics.newImage("sprites/shipShield.png")
+  ship.healthImage = love.graphics.newImage("sprites/ShipPlusHealth.png")
   ship.img = ship.sprite
   gameLoss = false
   
@@ -34,6 +36,9 @@ function playerDraw()
     
     if ship.tempInvul == true then
       love.graphics.draw(ship.shieldImage, ship.posX, ship.posY)
+    elseif ship.healthIncrease == true then
+      love.graphics.draw(ship.healthImage, ship.posX, ship.posY)
+      ship.healthIncrease = false
     end
     
 end

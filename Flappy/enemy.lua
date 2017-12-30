@@ -6,7 +6,6 @@ function _enemy:new(x,y, kind, diff)
   setmetatable(enemy, self)
   self.__index = self
   enemy:_create(x,y, kind, diff)
-   print(laserAudio:getVolume())
    
   return enemy
 end
